@@ -16,8 +16,8 @@ import com.bidyut.moviecatalogservice.model.Rating;
 import com.bidyut.moviecatalogservice.model.UserRating;
 
 /**
- * this microservice will take user request and call two microservice
- * and gether all the infor mation and respond to user with movie rating details
+ * this microservice will take user request and call two microservice and gether
+ * all the infor mation and respond to user with movie rating details
  * 
  * @author bidyut.kalita
  *
@@ -34,6 +34,7 @@ public class MovieCatalogServiceController {
 
 	@RequestMapping("/{userId}")
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
+		System.out.println("Request Received:  **************");
 
 		Rating ratings = new Rating();
 		// rating.setMovieId(movieId);
@@ -41,26 +42,30 @@ public class MovieCatalogServiceController {
 
 //		List<Rating> listRating = Arrays.asList(ratings);
 
-		UserRating listRating=webClientBuilder.build()
-				.get()
-				.uri("http://localhost:8012/movie-rating-service/rating/users/" + userId)
-				.retrieve()
-				.bodyToMono(UserRating.class)
-				.block();
-		
-		System.out.println(listRating);
-		
-		return listRating.getListRating().stream().map(rating -> {
-			// MovieInfoService infoService =
-			// restTemplate.getForObject("http://localhost:8011/movie-info-service/movies/"+rating.getMovieId(),
-			// MovieInfoService.class);
+		System.out.println("Calling Ratting Service:  **************");
+		UserRating listRating = restTemplate.getForObject("http://movie-rating-service/rating/users/" + userId,
+				UserRating.class);
 
-			MovieInfoService infoService = webClientBuilder.build()
-					.get()
-					.uri("http://localhost:8011/movie-info-service/movies/" + rating.getMovieId())
-					.retrieve()
-					.bodyToMono(MovieInfoService.class)
-					.block();
+//		UserRating listRating = webClientBuilder.build()
+//				.get()
+//				.uri("http://movie-rating-service/rating/users/" + userId)
+//				.retrieve().bodyToMono(UserRating.class).block();
+		 
+
+		System.out.println(listRating);
+
+		return listRating.getListRating().stream().map(rating -> {
+			System.out.println("Calling movie info Service:  **************");
+			MovieInfoService infoService = restTemplate.getForObject(
+					"http://movie-info-service/movies/" + rating.getMovieId(), MovieInfoService.class);
+
+			
+//			  MovieInfoService infoService = webClientBuilder.build() 
+//					  .get()
+//					  .uri("http://movie-info-service/movies/" + rating.getMovieId()) 
+//					  .retrieve()
+//					  .bodyToMono(MovieInfoService.class) .block();
+			 
 
 			CatalogItem items = new CatalogItem();
 			items.setDesc("test");

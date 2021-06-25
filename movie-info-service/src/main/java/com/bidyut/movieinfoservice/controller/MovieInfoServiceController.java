@@ -1,4 +1,4 @@
-package com.bidyut.movieinfoservice;
+package com.bidyut.movieinfoservice.controller;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
